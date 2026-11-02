@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Service
+Name=Open with Claude
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=inode/directory;
+Actions=openWithClaude;
+
+[Desktop Action openWithClaude]
+Name=Open with Claude
+Icon=utilities-terminal
+Exec="@HELPER@" "%f"

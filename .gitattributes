@@ -1,0 +1,4 @@
+*.sh text eol=lf
+*.bat text eol=crlf
+*.cpp text eol=crlf
+*.def text eol=crlf

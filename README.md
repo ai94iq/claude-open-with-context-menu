@@ -11,7 +11,17 @@ Two entries are installed:
 - **Windows 11 top-level menu** (sparse MSIX package with a small COM DLL):
   the entry appears in the main right-click menu.
 
-Windows only. Linux and macOS are not covered yet.
+## Platforms
+
+| Platform | Install | Menu | Tested |
+|---|---|---|---|
+| Windows 10/11 | `install.bat` | Classic menu, and top-level menu on Windows 11 | Yes, on Windows 11 |
+| Linux, KDE Dolphin | `sh linux/install.sh` | Dolphin service menu | Scripts and `.desktop` file only, in WSL Ubuntu; Dolphin not run |
+| Linux, GNOME Files | `sh linux/install.sh` | Nautilus script ("Scripts" submenu) | Script logic only, in WSL Ubuntu; Nautilus not run |
+| macOS | `sh macos/install.sh` | Finder Quick Action | Not tested: no Mac. XML and the generated shell command checked only |
+
+Uninstall on each platform: `uninstall.bat`, `sh linux/uninstall.sh`, or
+`sh macos/uninstall.sh`.
 
 ## Requirements
 
@@ -69,8 +79,29 @@ Top-level menu:
 A PowerShell 7 module path on that variable breaks the `Cert:` drive in
 Windows PowerShell.
 
+Linux (per user, under `~/.local`):
+
+- `~/.local/share/claude-open-with-context-menu/open-with-claude`: helper
+  that opens a terminal in the folder and starts claude there.
+- `~/.local/share/kio/servicemenus/open-with-claude.desktop`: Dolphin entry.
+- `~/.local/share/nautilus/scripts/Open with Claude`: Nautilus script.
+
+Nautilus decodes `%20` in the folder URI with `python3` when it is present.
+
+macOS: `~/Library/Services/Open with Claude.workflow`, a Finder Quick Action
+with one shell step. It opens Terminal in the folder. macOS may ask for
+permission to control Terminal the first time.
+
 ## Checks
 
+- Linux, in WSL Ubuntu 26.04 with a throwaway HOME: install, uninstall, the
+  helper's folder/file/no-argument paths, the Nautilus folder, file and
+  `%20` URI paths, and the `cd`-then-start quoting were run. A fake terminal
+  check ran the helper with `/bin/pwd` in place of claude.
+- Linux, Dolphin: `desktop-file-validate` reports that `MimeType` and
+  `Actions` are for Application entries only. KDE service menus use these
+  keys with `Type=Service`, so the entry is left as is. Not seen in Dolphin.
+- macOS: not run. The Quick Action XML was parsed with Python `plistlib` in WSL.
 - Classic entry: the registry values were read back with `reg query` after
   install, and both keys were gone after uninstall.
 - `cd` step: run with `cmd.exe` on a sample path.
@@ -86,6 +117,8 @@ Windows PowerShell.
   root of a drive, `C:\`) may not parse correctly, because `\"` escapes the
   closing quote. Untested.
 - Folder names that contain `&` or `%` may need extra quoting. Untested.
+- Linux: a folder path containing `"`, `$` or a backslash is not escaped in
+  the Dolphin `Exec` line. Untested.
 - The top-level entry is unsigned by any public CA. Only this machine trusts
   its certificate.
 
