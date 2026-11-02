@@ -13,12 +13,12 @@ if not exist "%EXE%" (
 rem Right-click on a folder
 reg add "HKCU\Software\Classes\Directory\shell\Claude" /ve /d "Open with Claude" /f >nul || goto :fail
 reg add "HKCU\Software\Classes\Directory\shell\Claude" /v Icon /d "%EXE%" /f >nul || goto :fail
-reg add "HKCU\Software\Classes\Directory\shell\Claude\command" /ve /d "\"%EXE%\" \"%%1\"" /f >nul || goto :fail
+reg add "HKCU\Software\Classes\Directory\shell\Claude\command" /ve /d "cmd.exe /d /k cd /d \"%%1\" && \"%EXE%\"" /f >nul || goto :fail
 
 rem Right-click on empty space inside a folder
 reg add "HKCU\Software\Classes\Directory\Background\shell\Claude" /ve /d "Open with Claude" /f >nul || goto :fail
 reg add "HKCU\Software\Classes\Directory\Background\shell\Claude" /v Icon /d "%EXE%" /f >nul || goto :fail
-reg add "HKCU\Software\Classes\Directory\Background\shell\Claude\command" /ve /d "\"%EXE%\" \"%%V\"" /f >nul || goto :fail
+reg add "HKCU\Software\Classes\Directory\Background\shell\Claude\command" /ve /d "cmd.exe /d /k cd /d \"%%V\" && \"%EXE%\"" /f >nul || goto :fail
 
 echo Installed "Open with Claude" (folder and folder background).
 echo On Windows 11 it appears under "Show more options".
