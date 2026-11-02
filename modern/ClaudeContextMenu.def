@@ -1,0 +1,4 @@
+LIBRARY ClaudeContextMenu
+EXPORTS
+    DllGetClassObject PRIVATE
+    DllCanUnloadNow PRIVATE

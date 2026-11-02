@@ -20,8 +20,13 @@ reg add "HKCU\Software\Classes\Directory\Background\shell\Claude" /ve /d "Open w
 reg add "HKCU\Software\Classes\Directory\Background\shell\Claude" /v Icon /d "%EXE%" /f >nul || goto :fail
 reg add "HKCU\Software\Classes\Directory\Background\shell\Claude\command" /ve /d "cmd.exe /d /k cd /d \"%%V\" && \"%EXE%\"" /f >nul || goto :fail
 
-echo Installed "Open with Claude" (folder and folder background).
-echo On Windows 11 it appears under "Show more options".
+echo Installed "Open with Claude" in the classic menu (folder and folder background).
+
+call "%~dp0modern\install-modern.bat"
+if errorlevel 1 (
+    echo Top-level menu entry failed. The classic entry is installed.
+    exit /b 1
+)
 exit /b 0
 
 :fail
