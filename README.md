@@ -11,6 +11,16 @@ Two entries are installed:
 - **Windows 11 top-level menu** (sparse MSIX package with a small COM DLL):
   the entry appears in the main right-click menu.
 
+## Screenshots
+
+Windows 11, main right-click menu:
+
+![Open with Claude in the Windows 11 right-click menu](docs/screenshots/windows11-top-level-menu.png)
+
+Classic menu (Shift + right-click, or "Show more options"):
+
+![Open with Claude in the classic right-click menu](docs/screenshots/windows-classic-menu.png)
+
 ## Platforms
 
 | Platform | Install | Menu | Tested |
