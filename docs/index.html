@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open with Claude: from the right-click menu</title>
+<meta name="description" content="Adds Open with Claude to the right-click menu. Right-click a folder and Claude Code opens in that folder. Windows 11 tested; Linux and macOS best effort.">
+<meta property="og:title" content="Open with Claude: from the right-click menu">
+<meta property="og:description" content="Right-click a folder and Claude Code opens in that folder. Windows 11 tested; Linux and macOS best effort.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://raw.githubusercontent.com/ai94iq/claude-open-with-context-menu/main/docs/screenshots/windows11-top-level-menu.png">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%23111228'/%3E%3Cg fill='%23d97757'%3E%3Ccircle cx='12' cy='12' r='3.1'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85' transform='rotate(45 12 12)'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85' transform='rotate(90 12 12)'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85' transform='rotate(135 12 12)'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85' transform='rotate(180 12 12)'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85' transform='rotate(225 12 12)'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85' transform='rotate(270 12 12)'/%3E%3Crect x='11.15' y='1.8' width='1.7' height='4.6' rx='0.85' transform='rotate(315 12 12)'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preload" href="fonts/02-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/02-mono.woff2" as="font" type="font/woff2" crossorigin>
+<script>document.documentElement.classList.add('js')</script>
+<style>
+@font-face { font-family: "Schibsted Grotesk"; src: url(fonts/02-sans.woff2) format("woff2"); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url(fonts/02-mono.woff2) format("woff2"); font-weight: 100 800; font-display: swap; }
+
+:root {
+  color-scheme: light dark;
+  --page: #fbfbfe; --ink: #1b1b3a; --mute: #55557a; --line: #e3e3f0; --quiet: #c9c9e2; --panel: #f0f0f8;
+  --mark: #a5b4fc; --on-mark: #1e1b4b;
+  --sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --swipe: cubic-bezier(.3, .7, .2, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --page: #111128; --ink: #e3e3f7; --mute: #9c9cc2; --line: #26263f; --quiet: #353552; --panel: #181834; }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 400 18px/1.55 var(--sans); }
+::selection { background: var(--mark); color: var(--on-mark); }
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+h1, h2, h3, p, figure, pre, ul { margin: 0; }
+code, pre { font-family: var(--mono); }
+.wrap { width: min(1160px, 100% - 48px); margin: 0 auto; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip { position: absolute; left: -9999px; top: 0; padding: 8px; background: var(--mark); color: var(--on-mark); z-index: 100; font-weight: 700; }
+.skip:focus { left: 0; }
+
+.hl, .on .t {
+  padding: .02em .24em; margin: 0 -.24em; border-radius: .1em .24em .16em .12em;
+  background: linear-gradient(var(--mark), var(--mark)) no-repeat 0 62% / 100% var(--mh, 100%);
+  color: var(--on-mark);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 24px; padding: 22px 0; }
+.brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; text-decoration: none; }
+.brand svg { width: 24px; height: 24px; flex: none; }
+nav { display: flex; flex-wrap: wrap; gap: 0 22px; font-size: 16px; }
+nav a { padding: 6px 0; text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.14fr); gap: 72px; padding: 56px 0 96px; align-items: start; }
+h1 { font-size: clamp(50px, 6.3vw, 84px); font-weight: 800; line-height: 1.12; letter-spacing: -.015em; }
+h1 .hl { --mh: 80%; padding: 0 .14em; margin: 0 -.14em; border-radius: .06em .12em .08em .05em; }
+.lede { margin-top: 26px; font-size: 21px; line-height: 1.45; max-width: 27em; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+.btn { display: inline-flex; align-items: center; gap: 9px; min-height: 46px; padding: 0 16px; border: 1.5px solid var(--ink); border-radius: 8px; background: none; color: var(--ink); font: 600 16px/1.2 var(--sans); text-decoration: none; cursor: pointer; }
+.btn svg { width: 17px; height: 17px; flex: none; }
+.btn.primary { background: var(--ink); color: var(--page); }
+.btn.copy { font: 400 14px/1.2 var(--mono); }
+.btn:hover { background: var(--mark); border-color: var(--mark); color: var(--on-mark); }
+.alt { margin-top: 12px; font-size: 15px; color: var(--mute); }
+.warn { margin-top: 16px; padding: 10px 14px; background: var(--panel); border: 1px solid var(--mark); border-radius: 8px; font-size: 15px; max-width: 44em; }
+.copied { min-height: 28px; margin-top: 8px; font-size: 16px; color: var(--mute); }
+
+/* right column: the actual menu, rendered */
+.mock { padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.mock .caption { font: 400 13.5px/22px var(--mono); color: var(--mute); margin-bottom: 12px; }
+.menu { background: var(--page); border: 1px solid var(--line); border-radius: 8px; max-width: 380px; }
+.menu .row { padding: 11px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; font-size: 15px; }
+.menu .row:last-child { border-bottom: 0; }
+.menu .row .ico { width: 15px; height: 15px; border: 1.5px solid var(--mute); border-radius: 3px; flex: none; }
+.menu .row .ico-spark { border: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--on-mark); }
+.menu .row.hit { background: var(--mark); color: var(--on-mark); font-weight: 600; }
+.after { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font: 400 13.5px/22px var(--mono); color: var(--mute); }
+.after b { color: var(--ink); }
+
+section { padding: 72px 0; }
+h2 { font-size: clamp(32px, 4.2vw, 52px); font-weight: 800; line-height: 1.1; letter-spacing: -.02em; max-width: 18em; text-wrap: balance; }
+h2 .hl { --mh: 72%; padding: 0 .12em; margin: 0 -.12em; border-radius: .06em .12em .08em .05em; }
+.sub { margin-top: 16px; max-width: 38em; color: var(--mute); }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; margin-top: 36px; }
+.lede-note { margin-top: 16px; font-size: 15px; color: var(--mute); }
+.card { padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); }
+.card.best { border-color: var(--mark); box-shadow: 0 0 0 2px var(--mark); }
+.card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.card p, .card li { font-size: 15px; color: var(--mute); }
+.card ul { padding-left: 18px; margin-top: 8px; }
+.card code { font-family: var(--mono); font-size: 13px; background: var(--quiet); color: var(--ink); padding: 1px 4px; border-radius: 3px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--on-mark); background: var(--mark); padding: 2px 8px; border-radius: 999px; margin-left: 10px; vertical-align: middle; }
+.tag.dim { background: var(--panel); color: var(--mute); border: 1px solid var(--line); }
+
+table { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 28px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { color: var(--mute); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+td code { font-family: var(--mono); font-size: 13px; }
+tr.dim { color: var(--mute); }
+.table-wrap { overflow-x: auto; }
+
+.checksums { margin-top: 20px; font: 400 13px/22px var(--mono); color: var(--mute); overflow-x: auto; }
+.checksums div { padding: 6px 0; border-bottom: 1px dashed var(--line); }
+
+footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 24px; padding: 26px 0 40px; border-top: 1px solid var(--line); color: var(--mute); font-size: 16px; }
+
+@keyframes swipe { from { background-size: 0 var(--mh, 100%); } }
+@media (prefers-reduced-motion: no-preference) {
+  h1 .hl { animation: swipe .4s var(--swipe) .3s backwards; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (max-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 44px; padding: 32px 0 64px; }
+  h1 { font-size: clamp(40px, 13.4vw, 84px); }
+  .cols { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .wrap { width: calc(100% - 32px); }
+  body { font-size: 17px; }
+  .lede { font-size: 19px; }
+  .mock { padding: 14px; }
+  .menu { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+<a href="#top" class="skip">Skip to content</a>
+<div class="wrap" id="top">
+
+  <header>
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 24 24" fill="#d97757" aria-hidden="true"><circle cx="12" cy="12" r="3.1"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(45 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(90 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(135 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(180 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(225 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(270 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(315 12 12)"/></svg>
+      open-with-claude
+    </a>
+    <nav aria-label="Main">
+      <a href="#install">Install</a>
+      <a href="#platforms">Platforms</a>
+      <a href="#safety">Safety</a>
+      <a href="https://github.com/ai94iq/claude-open-with-context-menu">Source</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <h1>Right-click.<br>Open with <mark class="hl">Claude.</mark></h1>
+        <p class="lede">Adds an "Open with Claude" entry to the right-click menu. Right-click a folder, or empty space inside one, and Claude Code opens in that folder in a new window.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/ai94iq/claude-open-with-context-menu/releases/tag/v1.0.0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
+            Download v1.0.0
+          </a>
+          <button class="btn copy" type="button" data-copy="git clone https://github.com/ai94iq/claude-open-with-context-menu.git &amp;&amp; cd claude-open-with-context-menu &amp;&amp; install.bat">git clone ... &amp;&amp; install.bat</button>
+        </div>
+        <p class="alt">Prefer double-click? Get <code>open-with-claude-windows-v1.0.0.zip</code> and double-click <code>install.bat</code> inside.</p>
+        <p class="warn">Heads up: the scripts are unsigned, so Windows will show a SmartScreen warning. <a href="https://github.com/ai94iq/claude-open-with-context-menu/blob/main/install.bat">Read install.bat</a> first, then choose "Run anyway". Linux and macOS users: the same scripts, best effort.</p>
+        <p class="copied" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="mock" role="img" aria-label="Windows 11 right-click menu with Open with Claude highlighted, followed by what happens after you pick it">
+        <p class="caption">right-click &rarr; folder &rarr; "Open with Claude"</p>
+        <div class="menu">
+          <div class="row"><span class="ico"></span>Open</div>
+          <div class="row"><span class="ico"></span>Open in Terminal</div>
+          <div class="row hit"><span class="ico ico-spark"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="3.1"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(45 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(90 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(135 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(180 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(225 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(270 12 12)"/><rect x="11.15" y="1.8" width="1.7" height="4.6" rx="0.85" transform="rotate(315 12 12)"/></svg></span>Open with Claude</div>
+          <div class="row"><span class="ico"></span>Properties</div>
+        </div>
+        <p class="after">&gt; Claude Code started in <b>C:\Users\you\project</b></p>
+        <p class="after" style="border-top:0; margin-top:4px; padding-top:0">Windows 11: under "Show more options" (classic), or in the main menu with the top-level install.</p>
+      </div>
+    </div>
+
+    <section id="install">
+      <h2>Which install <mark class="hl">first.</mark></h2>
+      <p class="sub">On Windows 11, start with the Classic menu: it is the tested path and works on Windows 10 too. Pick the top-level entry only if you want the entry in the main menu and already have Visual Studio Build Tools with the C++ workload.</p>
+      <div class="cols">
+        <div class="card best">
+          <h3>Classic menu <span class="tag">start here</span></h3>
+          <p>Registry entry under HKCU. Shows under "Show more options" on Windows 11, directly on Windows 10.</p>
+          <p style="margin-top:12px"><code>install.bat</code></p>
+        </div>
+        <div class="card">
+          <h3>Top-level menu <span class="tag dim">optional</span></h3>
+          <p>Sparse MSIX package with a small COM DLL. The entry appears in the main right-click menu on Windows 11.</p>
+          <p style="margin-top:12px"><code>modern\build-modern.bat</code></p>
+        </div>
+      </div>
+      <p class="lede-note">If the entry does not appear after installing, sign out and back in (or restart Explorer); the classic entry registers per user. On Windows 11, look under "Show more options".</p>
+    </section>
+
+    <section id="platforms">
+      <h2>Where it <mark class="hl">runs.</mark></h2>
+      <p class="sub">Windows is the tested path. Linux and macOS are best effort, and the release zips contain the same scripts.</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr">Platform support and test status</caption>
+          <thead><tr><th>Platform</th><th>Install</th><th>Menu</th><th>Tested</th></tr></thead>
+          <tbody>
+            <tr><td>Windows 10/11</td><td><code>install.bat</code></td><td>Classic, plus top-level on 11</td><td>Yes, on Windows 11</td></tr>
+            <tr class="dim"><td>Linux, KDE Dolphin</td><td><code>sh linux/install.sh</code></td><td>Dolphin service menu</td><td>Best effort: scripts only, in WSL</td></tr>
+            <tr class="dim"><td>Linux, GNOME Files</td><td><code>sh linux/install.sh</code></td><td>Nautilus "Scripts" submenu</td><td>Best effort: logic only, in WSL</td></tr>
+            <tr class="dim"><td>macOS</td><td><code>sh macos/install.sh</code></td><td>Finder Quick Action</td><td>Not tested: no Mac</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="safety">
+      <h2>Trust, but <mark class="hl">verify.</mark></h2>
+      <p class="sub">Unsigned scripts, said plainly, plus everything you need to check them yourself.</p>
+      <div class="cols">
+        <div class="card">
+          <h3>Read the script first</h3>
+          <p><code>install.bat</code> is small and readable: it registers the menu entry under HKCU and, if you have the build tools, builds the top-level entry. <a href="https://github.com/ai94iq/claude-open-with-context-menu/blob/main/install.bat">install.bat</a>, <a href="https://github.com/ai94iq/claude-open-with-context-menu/blob/main/linux/install.sh">linux/install.sh</a>, <a href="https://github.com/ai94iq/claude-open-with-context-menu/blob/main/macos/install.sh">macos/install.sh</a>.</p>
+        </div>
+        <div class="card">
+          <h3>Uninstall is one step away</h3>
+          <p><code>uninstall.bat</code>, <code>sh linux/uninstall.sh</code>, or <code>sh macos/uninstall.sh</code> removes the entry for the current user. No admin needed to install or to remove.</p>
+        </div>
+      </div>
+      <div class="checksums" aria-label="SHA-256 checksums for release assets">
+        <div>open-with-claude-windows-v1.0.0.zip  sha256:69096a902012557a6a11bffe008b68a769448fa92286ca9f90514b07bc4061d7</div>
+        <div>open-with-claude-linux-v1.0.0.zip    sha256:f646d566886f960fe082e8b8198c344a92988ee78bac9ef762a4b64621efa018</div>
+        <div>open-with-claude-macos-v1.0.0.zip    sha256:c83b4bf4d80cb186e33d7ce3eafe90b1efff607397fb7a457d66e6eba2ef48ed</div>
+      </div>
+      <p class="alt" style="margin-top:14px"><button class="btn copy" type="button" data-copy="certutil -hashfile open-with-claude-windows-v1.0.0.zip SHA256">Copy: certutil -hashfile ... SHA256</button></p>
+    </section>
+  </main>
+
+  <footer>
+    <span>MIT licensed.</span>
+    <span>Updated 2026-11-06. <a href="https://github.com/ai94iq/claude-open-with-context-menu">Source</a>, <a href="https://github.com/ai94iq/claude-open-with-context-menu/issues">Issues</a></span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var status = document.querySelector('.copied');
+  function copyToClipboard(text) {
+    var done = function () { status.textContent = 'Copied.'; setTimeout(function () { status.textContent = ''; }, 3500); };
+    var fail = function () { status.textContent = 'Select the text and copy it.'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { execCopy(text) ? done() : fail(); });
+    } else {
+      execCopy(text) ? done() : fail();
+    }
+  }
+  function execCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.top = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta); return ok;
+    } catch (e) { return false; }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () { copyToClipboard(b.getAttribute('data-copy')); });
+  });
+})();
+</script>
+</body>
+</html>
