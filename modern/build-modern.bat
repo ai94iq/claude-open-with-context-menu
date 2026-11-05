@@ -34,6 +34,8 @@ copy /y "%BUILD%\ClaudeContextMenu.dll" "%PKG%\" >nul || exit /b 1
 copy /y "%BUILD%\ClaudeContextMenu.exe" "%PKG%\" >nul || exit /b 1
 copy /y "%HERE%AppxManifest.xml" "%PKG%\" >nul || exit /b 1
 copy /y "%HERE%Assets\StoreLogo.png" "%PKG%\Assets\" >nul || exit /b 1
+copy /y "%HERE%Assets\claude.ico" "%PKG%\Assets\" >nul || exit /b 1
+copy /y "%HERE%Assets\claude.png" "%PKG%\Assets\" >nul || exit /b 1
 
 echo Built package in "%PKG%".
 exit /b 0

@@ -133,6 +133,20 @@ public:
         return SHStrDupW(L"Open with Claude", name);
     }
     STDMETHODIMP GetIcon(IShellItemArray*, LPWSTR* icon) override {
+        HMODULE self = nullptr;
+        wchar_t dll[MAX_PATH];
+        if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                               GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                               reinterpret_cast<LPCWSTR>(&GetModuleHandleExW), &self) &&
+            GetModuleFileNameW(self, dll, ARRAYSIZE(dll))) {
+            std::wstring p = dll;
+            size_t slash = p.find_last_of(L"\\/");
+            if (slash != std::wstring::npos) {
+                std::wstring ico = p.substr(0, slash + 1) + L"Assets\\claude.ico";
+                if (GetFileAttributesW(ico.c_str()) != INVALID_FILE_ATTRIBUTES)
+                    return SHStrDupW(ico.c_str(), icon);
+            }
+        }
         std::wstring exe = ClaudeExePath();
         if (exe.empty()) return E_FAIL;
         return SHStrDupW((exe + L",0").c_str(), icon);

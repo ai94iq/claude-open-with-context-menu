@@ -32,7 +32,7 @@
   <Applications>
     <Application Id="App" Executable="ClaudeContextMenu.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements DisplayName="Open with Claude" Description="Open Claude Code in this folder"
-        Square150x150Logo="Assets\StoreLogo.png" Square44x44Logo="Assets\StoreLogo.png" BackgroundColor="transparent" />
+        Square150x150Logo="Assets\claude.png" Square44x44Logo="Assets\claude.png" BackgroundColor="transparent" />
       <Extensions>
         <desktop4:Extension Category="windows.fileExplorerContextMenus">
           <desktop4:FileExplorerContextMenus>
